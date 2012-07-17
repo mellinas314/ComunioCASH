@@ -30,15 +30,32 @@ function calculaSaldos() {
 }
 
 function goInicioTemporada() {
-    var fecha = getUltimaFecha();
-    console.log(fecha);
-    //Fecha comienzo temporada: 14.05.12
-    var dia = Number(fecha.split(".")[0]);
-    var mes = Number(fecha.split(".")[1]);
-    var ano = Number(fecha.split(".")[2]);
+    var interval;
+    window.alert("Esto puede tardar un poco... Tu ventana podría moverse durante el proceso, no te preocupes. ¡TODO VA BIEN!");
+    interval = setInterval(function () {
+        if(isTemporadaIniciada()===0){
+            window.scrollTo(0, document.body.scrollHeight);
+        }else{
+            window.scrollTo(0, 0);
+            clearInterval(interval);
+        }
+    }, 1100);
 }
 
 function getUltimaFecha() {
     var fecha = $($(".news_date")[$(".news_date").length - 1]).attr("title");
     return fecha.split(" ")[0];
+}
+
+function isTemporadaIniciada () {
+    //Fecha comienzo temporada: 14.05.12
+    var fecha = getUltimaFecha();
+    console.log(fecha);
+    var dia = Number(fecha.split(".")[0]);
+    var mes = Number(fecha.split(".")[1]);
+    var ano = Number(fecha.split(".")[2]);
+    if(ano<12) return 1;
+    if(ano===12 && mes<5) return 1;
+    if(ano===12 && mes===5 && dia<15) return 1;
+    else return 0;
 }
