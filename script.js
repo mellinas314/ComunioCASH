@@ -20,7 +20,9 @@ function handlerClick( evnt ) {
 	}else{
 		//Oculto los resultados
 		$( "#mis_resultados").hide();
-		$( "#mis_resultados").attr("class", "oculto");
+		//$( "#mis_resultados").attr("class", "oculto");
+		$( "#mis_resultados" ).length;
+		
 	}
 }
 
