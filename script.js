@@ -25,17 +25,20 @@ function handlerClick( evnt ) {
 }
 
 function calculaSaldos() {
-    //Compruebo si la última fecha disponible es mayor que el nuevo año (Fecha comienzo temporada === 14.05.12)
-    var fecha = $(".news_date");
-    fecha = fecha[$(".news_date").length - 1];
-    fecha = $(fecha).attr("title");
-    fecha = fecha.split(" ");
-    isTemporadaIniciada(fecha[0]);
+    //Cargo hasta los post del inicio de la temporada
+    goInicioTemporada();
 }
 
-function isTemporadaIniciada( fecha ) {
+function goInicioTemporada() {
+    var fecha = getUltimaFecha();
+    console.log(fecha);
+    //Fecha comienzo temporada: 14.05.12
     var dia = Number(fecha.split(".")[0]);
     var mes = Number(fecha.split(".")[1]);
     var ano = Number(fecha.split(".")[2]);
-    console.log("Año: " + ano + ", mes: " + mes + "dia: " + dia);
+}
+
+function getUltimaFecha() {
+    var fecha = $($(".news_date")[$(".news_date").length - 1]).attr("title");
+    return fecha.split(" ")[0];
 }
