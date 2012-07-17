@@ -16,6 +16,7 @@ function handlerClick( evnt ) {
 		//Hago los calculos y lo muestro
 		$( "#mis_resultados").show();
 		$( "#mis_resultados").attr("class", "mostrado");
+		
 	}else{
 		//Oculto los resultados
 		$( "#mis_resultados").hide();
@@ -24,4 +25,6 @@ function handlerClick( evnt ) {
 }
 
 function calculaSaldos() {
+    //Compruebo si la última fecha disponible es mayor que el nuevo año
+    
 }
