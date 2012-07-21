@@ -32,14 +32,15 @@ function calculaSaldos() {
 function goInicioTemporada() {
     var interval;
     window.alert("Esto puede tardar un poco... Tu ventana podría moverse durante el proceso, no te preocupes. ¡TODO VA BIEN!");
+    window.scrollTo(0, 1);
     interval = setInterval(function () {
         if(isTemporadaIniciada()===0){
-            window.scrollTo(0, document.body.scrollHeight);
+            window.scrollTo(0, document.body.scrollHeight-window.innerHeight);
         }else{
             window.scrollTo(0, 0);
             clearInterval(interval);
         }
-    }, 1100);
+    }, 2);
 }
 
 function getUltimaFecha() {
