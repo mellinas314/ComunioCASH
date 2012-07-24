@@ -1,8 +1,9 @@
 //Añado el botón que calculará los puntos
 var vez = 0;
 var dinero_inicial = 40000000;
-var boton = "<div id='mi_div' class='article_header2'><div><a id='boton_calcula_puntos' class='newbutton new_message_btn' >CALCULAR DINERO</a><div><div id='mis_resultados' class='oculto' style='padding:1em;display:none'>Ahora se ve...<div></div>";
+var boton = "<div id='mi_div' class='article_header2'><div><a id='boton_calcula_puntos' class='newbutton new_message_btn' >CALCULAR DINERO</a><div><div id='mis_resultados' class='oculto' style='padding:1em;display:none'>Calculando...<div></div>";
 var usuarios = new Array();
+var usuarios_ordenado = new Array();
 
 $( "#postwrap").prepend(boton);
 //Añado el listener para el boton
@@ -98,7 +99,32 @@ function calculaTodo() {
                 }*/
             }
         }
+    }               
+    printResultados();
+}
+
+function printResultados() {
+    ordenaUsuarios();
+    var html = "<table style='border:solid; border-width:thin'>";
+    for (var i = 0; i<usuarios.length; i++){
+        html += "<tr><td style='padding-right:2em'><b>"+ parseInt(parseInt(i)+parseInt(1)) + ". </b>" + usuarios[i] + ":</td><td align='right'> " + addCommas(window.localStorage.getItem(usuarios[i])) + " €</td></tr>";   
     }
+    html += "</table>"
+    $("#mis_resultados").html(html);
+}
+
+function ordenaUsuarios() {
+    var sin_computer = new Array();
+    for( var i = 0; i<usuarios.length; i++){
+        if(usuarios[i]!=="Computer"){
+            sin_computer.push(usuarios[i]);
+        }
+    };
+    usuarios = sin_computer;
+    //ordeno de mas dinero a menos
+    usuarios.sort(function(a, b) {
+        return (window.localStorage.getItem(b) - window.localStorage.getItem(a));
+    })
 }
 
 function getUltimaFecha() {
@@ -116,4 +142,18 @@ function isTemporadaIniciada () {
     if(ano===12 && mes<5) return 1;
     if(ano===12 && mes===5 && dia<15) return 1;
     else return 0;
+}
+
+
+function addCommas(nStr)
+{
+    nStr += '';
+    x = nStr.split('.');
+    x1 = x[0];
+    x2 = x.length > 1 ? '.' + x[1] : '';
+    var rgx = /(\d+)(\d{3})/;
+    while (rgx.test(x1)) {
+        x1 = x1.replace(rgx, '$1' + '.' + '$2');
+    }
+    return x1 + x2;
 }
