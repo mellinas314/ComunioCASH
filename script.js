@@ -2,10 +2,11 @@
 var vez = 0;
 var dinero_inicial = 40000000;
 var boton = "<div id='mi_div' class='article_header2'><div><a id='boton_calcula_puntos' class='newbutton new_message_btn' >CALCULAR DINERO</a><div><div id='mis_resultados' class='oculto' style='padding:1em;display:none'>Calculando...<div></div>";
+var lista_dinero = "<div id='dinero_inicial' style='float:left;font-size:x-small;padding-left:1em;padding-right:1.5em'>Dinero inicial: <select id='sel_mio'><option value='40000000'>40.000.000€</option><option value='20000000'>20.000.000€</option><option value='9000000'>9.000.000€</option><option value='5000000'>5.000.000€</option></select></div>"
 var usuarios = new Array();
 var usuarios_ordenado = new Array();
-
 $( "#postwrap").prepend(boton);
+$( "#postwrap").prepend(lista_dinero);
 //Añado el listener para el boton
 $( "#boton_calcula_puntos" ).bind("click", handlerClick);
 
@@ -14,7 +15,9 @@ function handlerClick( evnt ) {
 		if(vez===0){
 			//Todavia no se ha hecho el calculo, llamo a la función que se encargará de ello
 			window.localStorage.clear();
+			dinero_inicial = parseInt($("#sel_mio").val());
 			goInicioTemporada();
+            $("#dinero_inicial").hide();
 			vez++;
 		}
 		//Hago los calculos y lo muestro
