@@ -136,14 +136,14 @@ function getUltimaFecha() {
 }
 
 function isTemporadaIniciada () {
-    //Fecha comienzo temporada: 14.05.12
+    //Fecha comienzo temporada: 14.05.12 03.06.12
     var fecha = getUltimaFecha();
     var dia = Number(fecha.split(".")[0]);
     var mes = Number(fecha.split(".")[1]);
     var ano = Number(fecha.split(".")[2]);
     if(ano<12) return 1;
     if(ano===12 && mes<6) return 1;
-    if(ano===12 && mes===5 && dia<4) return 1;
+    if(ano===12 && mes===6 && dia<4) return 1;
     else return 0;
 }
 
