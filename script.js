@@ -49,15 +49,23 @@ function goInicioTemporada() {
 
 function calculaTodo() {       
     //Obtengo todos los elementos del tablon
-    var elementos = $(".article_content1 .article_content_text");
-    var elementos2 = $(".article_content2 .article_content_text");
-    $.merge(elementos, elementos2);
-    
+    var elementos = $(".article_content1 .article_content_text, .article_content2 .article_content_text");
+
     for(var i=0; i<elementos.length; i++){
         //Compruebo que se trata de un post de transacciones
         if( $(elementos[i]).find("a")!==0 && $(elementos[i]).text().indexOf("cambia por ")!==-1 ) {
             //Se trata de un traspaso
             var texto = $(elementos[i]).text();
+            var enlaces_tmp = $(elementos[i]).find("a");
+            var enlaces = new Array();
+            for(var h=0; h<enlaces_tmp.length; h++) {
+                var href = $(enlaces_tmp[h]).attr("href");
+                if(href.indexOf("playerInfo")!==-1) {
+                    //Añado el elemento al array de enlaces valido
+                    enlaces.push(enlaces_tmp[h]);
+                }
+            }
+            var indice_enlaces = 0;
             var array_ventas = texto.split("cambia por ");
             for(var j = 1; j<array_ventas.length; j++){
                 var cadena = array_ventas[j];
@@ -74,10 +82,18 @@ function calculaTodo() {
                 intervienen = intervienen[intervienen.length - 1];
                 var vendedor = intervienen.split(" a ")[0];
                 vendedor = vendedor.split(".")[0];
+                if(vendedor!=="Computer"){
+                    vendedor = getPID($(enlaces[indice_enlaces]));
+                    indice_enlaces++;
+                }
                 //Obtengo el comprador
                 var comprador = intervienen.split(" a ");
                 comprador = comprador[comprador.length - 1];
                 comprador = comprador.split(".")[0];
+                if(comprador!=="Computer"){
+                    comprador = getPID($(enlaces[indice_enlaces]));
+                    indice_enlaces++;
+                }
                 
                 //Añado los usuarios si es la primera vez que participan en una transaccion
                 if(window.localStorage.getItem(vendedor)===null){
@@ -94,23 +110,26 @@ function calculaTodo() {
                 var v_dinero = parseInt(window.localStorage.getItem(vendedor));
                 window.localStorage.setItem(comprador, c_dinero - cantidad);
                 window.localStorage.setItem(vendedor, v_dinero + cantidad);
-                
-                /*if(comprador=="Palla"){                    
-                console.log(array_ventas[j]);
-                console.log(cant_int + " ---> " + cantidad);
-                console.log(comprador + " tiene " + window.localStorage.getItem(comprador));
-                }*/
             }
         }
-    }               
+    }
     printResultados();
+}
+
+function getPID ( link ) {
+    var pid = $(link).attr("href").split("pid=")[1];
+    return(pid);
+}
+
+function getName ( pid ) {
+    
 }
 
 function printResultados() {
     ordenaUsuarios();
     var html = "<table style='border:solid; border-width:thin'>";
     for (var i = 0; i<usuarios.length; i++){
-        html += "<tr><td style='padding-right:2em'><b>"+ parseInt(parseInt(i)+parseInt(1)) + ". </b>" + usuarios[i] + ":</td><td align='right'> " + addCommas(window.localStorage.getItem(usuarios[i])) + " €</td></tr>";   
+        html += "<tr><td style='padding-right:2em'><b>"+ parseInt(parseInt(i)+parseInt(1)) + ". </b>" + getName(usuarios[i]) + ":</td><td align='right'> " + addCommas(window.localStorage.getItem(usuarios[i])) + " €</td></tr>";   
     }
     html += "</table>"
     $("#mis_resultados").html(html);
@@ -136,7 +155,7 @@ function getUltimaFecha() {
 }
 
 function isTemporadaIniciada () {
-    //Fecha comienzo temporada: 14.05.12 03.06.12
+    //Fecha comienzo temporada: 03.06.12
     var fecha = getUltimaFecha();
     var dia = Number(fecha.split(".")[0]);
     var mes = Number(fecha.split(".")[1]);
