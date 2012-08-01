@@ -122,14 +122,19 @@ function getPID ( link ) {
 }
 
 function getName ( pid ) {
-    
+    var nombre = pid;
+    $.get("./playerInfo.phtml/?pid=" + pid, function(data) {
+        nombre = $(data).find("#title h1").text();
+        $("#" + pid).html(nombre);
+    })
+    return(nombre);
 }
 
 function printResultados() {
     ordenaUsuarios();
     var html = "<table style='border:solid; border-width:thin'>";
     for (var i = 0; i<usuarios.length; i++){
-        html += "<tr><td style='padding-right:2em'><b>"+ parseInt(parseInt(i)+parseInt(1)) + ". </b>" + getName(usuarios[i]) + ":</td><td align='right'> " + addCommas(window.localStorage.getItem(usuarios[i])) + " €</td></tr>";   
+        html += "<tr><td style='padding-right:2em'><b>"+ parseInt(parseInt(i)+parseInt(1)) + ". </b>" + "<span id=\"" + usuarios[i] + "\">"+ getName(usuarios[i]) +"</span>" + ":</td><td align='right'> " + addCommas(window.localStorage.getItem(usuarios[i])) + " €</td></tr>";   
     }
     html += "</table>"
     $("#mis_resultados").html(html);
