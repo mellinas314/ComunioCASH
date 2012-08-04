@@ -34,7 +34,7 @@ function handlerClick( evnt ) {
 
 function goInicioTemporada() {
     var interval;
-    window.alert("Esto puede tardar un poco... Tu ventana podría moverse durante el proceso, no te preocupes. ¡TODO VA BIEN!");
+    //window.alert("Esto puede tardar un poco... Tu ventana podría moverse durante el proceso, no te preocupes. ¡TODO VA BIEN!");
     window.scrollTo(0, 1);
     interval = setInterval(function () {
         if(isTemporadaIniciada()===0){
@@ -110,6 +110,62 @@ function calculaTodo() {
                 var v_dinero = parseInt(window.localStorage.getItem(vendedor));
                 window.localStorage.setItem(comprador, c_dinero - cantidad);
                 window.localStorage.setItem(vendedor, v_dinero + cantidad);
+            }
+        }
+        //Compruebo si se trata de una pena disciplinaria
+        if($(elementos[i]).text().indexOf("Pena disciplinaria")!==-1 && $(elementos[i]).text().indexOf("serán quitados a")!==-1){
+            //Compruebo que el mensaje procede realmente de computer y no es una coña de un jugador
+            var padre = $(elementos[i]).parent();
+            padre = $(padre).prev().prev();
+            var esc_mensaje = $(padre).find(".newsheader a");
+            if($(esc_mensaje).text().indexOf("Computer")!==-1 && $(esc_mensaje).attr("href").split("?pid=")[1]==="1") {
+                //Guardo el nombre y el valor de la pena disciplinaria
+                var valor = $(elementos[i]).text().split("Pena disciplinaria: ")[1].split(" serán")[0].split(".");
+                var tmp = "";
+                for(var z=0;z<valor.length;z++){
+                    tmp += valor[z];
+                }
+                valor = parseInt(tmp);
+                valor = valor * -1;
+
+                //Saco el nombre del jugador penalizado
+                var nombre = $(elementos[i]).text().split("quitados a ")[1].split(" por el administrador")[0];
+                if(window.localStorage.getItem(nombre)===null) {
+                    window.localStorage.setItem(nombre, valor);
+                }else{
+                    //actualizo la cantidad total de penalizaciones/primas
+                    var actual = parseInt(window.localStorage.getItem(nombre));
+                    actual = actual + valor;
+                    window.localStorage.setItem(nombre, actual);
+                }
+            }
+        }
+        //Compruebo si se trata de una prima
+        if($(elementos[i]).text().indexOf("Abono:")!==-1 && $(elementos[i]).text().indexOf("serán abonados a")!==-1){
+            //Compruebo que el mensaje procede realmente de computer y no es una coña de un jugador
+            var padre = $(elementos[i]).parent();
+            padre = $(padre).prev().prev();
+            var esc_mensaje = $(padre).find(".newsheader a");
+            if($(esc_mensaje).text().indexOf("Computer")!==-1 && $(esc_mensaje).attr("href").split("?pid=")[1]==="1") {
+                //Guardo el nombre y el valor de la pena disciplinaria
+                var valor = $(elementos[i]).text().split("Abono: ")[1].split(" serán")[0].split(".");
+                var tmp = "";
+                for(var z=0;z<valor.length;z++){
+                    tmp += valor[z];
+                }
+                valor = parseInt(tmp);
+
+                //Saco el nombre del jugador penalizado
+                var nombre = $(elementos[i]).text().split("abonados a ")[1].split(" por el administrador")[0];
+                console.log(window.localStorage.getItem("pepe"));
+                if(window.localStorage.getItem(nombre)===null) {
+                    window.localStorage.setItem(nombre, valor);
+                }else{
+                    //actualizo la cantidad total de penalizaciones/primas
+                    var actual = parseInt(window.localStorage.getItem(nombre));
+                    actual = actual + valor;
+                    window.localStorage.setItem(nombre, actual);
+                }
             }
         }
     }
