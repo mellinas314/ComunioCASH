@@ -5,6 +5,7 @@ var boton = "<div id='mi_div' class='article_header2'><div><a id='boton_calcula_
 var lista_dinero = "<div id='dinero_inicial' style='float:left;font-size:x-small;padding-left:1em;padding-right:1.5em'>Dinero inicial: <select id='sel_mio'><option value='40000000'>40.000.000€</option><option value='20000000'>20.000.000€</option><option value='9000000'>9.000.000€</option><option value='5000000'>5.000.000€</option></select></div>"
 var usuarios = new Array();
 var usuarios_ordenado = new Array();
+var nombres = new Array();
 $( "#postwrap").prepend(boton);
 $( "#postwrap").prepend(lista_dinero);
 //Añado el listener para el boton
@@ -131,6 +132,7 @@ function calculaTodo() {
                 //Saco el nombre del jugador penalizado
                 var nombre = $(elementos[i]).text().split("quitados a ")[1].split(" por el administrador")[0];
                 if(window.localStorage.getItem(nombre)===null) {
+                    nombres.push(nombre);
                     window.localStorage.setItem(nombre, valor);
                 }else{
                     //actualizo la cantidad total de penalizaciones/primas
@@ -157,8 +159,8 @@ function calculaTodo() {
 
                 //Saco el nombre del jugador penalizado
                 var nombre = $(elementos[i]).text().split("abonados a ")[1].split(" por el administrador")[0];
-                console.log(window.localStorage.getItem("pepe"));
                 if(window.localStorage.getItem(nombre)===null) {
+                    nombres.push(nombre);
                     window.localStorage.setItem(nombre, valor);
                 }else{
                     //actualizo la cantidad total de penalizaciones/primas
@@ -178,22 +180,46 @@ function getPID ( link ) {
 }
 
 function getName ( pid ) {
-    var nombre = pid;
-    $.get("./playerInfo.phtml/?pid=" + pid, function(data) {
-        nombre = $(data).find("#title h1").text();
-        $("#" + pid).html(nombre);
+                console.log(nombres);
+    jQuery.ajax({
+        url:"./playerInfo.phtml/?pid=" + pid,
+        async:false,
+        success: function(data) {
+                console.log(nombres);
+            var nombre = $(data).find("#title h1").text().split(" (")[0];
+            var html = "<a href='playerInfo.phtml?pid=" + pid + "' target='_blank'>" + nombre + "</a>";
+            //modifico el dinero total con lso cambios por primas
+            if(window.localStorage.getItem(nombre)!==null) {
+                var dinero = $("#" + pid).parent().next();
+                var valor = addCommas(parseInt(window.localStorage.getItem(pid)) + parseInt(window.localStorage.getItem(nombre))) + " €";
+                $(dinero).html(valor);
+
+                //Elimino el usuario de los usuarios con primas por calcular
+                removeA(nombres, nombre);
+            }
+            $("#" + pid).html(html);
+        }
     })
-    return(nombre);
 }
 
 function printResultados() {
     ordenaUsuarios();
     var html = "<table style='border:solid; border-width:thin'>";
-    for (var i = 0; i<usuarios.length; i++){
-        html += "<tr><td style='padding-right:2em'><b>"+ parseInt(parseInt(i)+parseInt(1)) + ". </b>" + "<span id=\"" + usuarios[i] + "\">"+ getName(usuarios[i]) +"</span>" + ":</td><td align='right'> " + addCommas(window.localStorage.getItem(usuarios[i])) + " €</td></tr>";   
-    }
-    html += "</table>"
     $("#mis_resultados").html(html);
+    for (var i = 0; i<usuarios.length; i++){
+        html = "<tr><td style='padding-right:2em'><b>"+ parseInt(parseInt(i)+parseInt(1)) + ". </b>" + "<span id=\"" + usuarios[i] + "\"></span>" + ":</td><td align='right'> " + addCommas(window.localStorage.getItem(usuarios[i])) + " €</td></tr>";
+        $("#mis_resultados table").append(html);
+        getName(usuarios[i]);
+    }
+    html = "</table>"
+    $("#mis_resultados").append(html);
+    if(nombres.length!==0){
+        html = "<table style='border:solid; border-width:thin;margin-top:1em'><tr><td colspan='2'>Puede que algunas primas no hayan sido aplicadas...</td></tr>";
+        for(var l=0; l<nombres.length; l++){
+            html += "<tr><td>"+nombres[l]+"</td><td>" + addCommas(window.localStorage.getItem(nombres[l])) + " €</td></tr>";
+        }
+        $("#mis_resultados").append(html + "</table>");
+    }
 }
 
 function ordenaUsuarios() {
@@ -239,4 +265,15 @@ function addCommas(nStr)
         x1 = x1.replace(rgx, '$1' + '.' + '$2');
     }
     return x1 + x2;
+}
+
+function removeA(arr){
+    var what, a= arguments, L= a.length, ax;
+    while(L> 1 && arr.length){
+        what= a[--L];
+        while((ax= arr.indexOf(what))!= -1){
+            arr.splice(ax, 1);
+        }
+    }
+    return arr;
 }
