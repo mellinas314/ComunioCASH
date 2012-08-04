@@ -180,12 +180,10 @@ function getPID ( link ) {
 }
 
 function getName ( pid ) {
-                console.log(nombres);
     jQuery.ajax({
         url:"./playerInfo.phtml/?pid=" + pid,
         async:false,
         success: function(data) {
-                console.log(nombres);
             var nombre = $(data).find("#title h1").text().split(" (")[0];
             var html = "<a href='playerInfo.phtml?pid=" + pid + "' target='_blank'>" + nombre + "</a>";
             //modifico el dinero total con lso cambios por primas
