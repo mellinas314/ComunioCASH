@@ -39,7 +39,7 @@ function goInicioTemporada() {
     window.scrollTo(0, 1);
     interval = setInterval(function () {
         if(isTemporadaIniciada()===0){
-            window.scrollTo(0, document.body.scrollHeight-window.innerHeight);
+            window.scrollTo(0, $(document).height());
         }else{
             window.scrollTo(0, 0);
             clearInterval(interval);
