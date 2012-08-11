@@ -52,13 +52,11 @@ function calculaTodo() {
     //Obtengo todos los elementos del tablon
     var elementos = $(".article_content1 .article_content_text, .article_content2 .article_content_text");
 
-    //TODO comprobar que el autor del post es computer
     for(var i=0; i<elementos.length; i++){
         //Compruebo que el mensaje procede de computer. En otro caso, se descarta.
         var padre = $(elementos[i]).parent();
         padre = $(padre).prev().prev();
         var esc_mensaje = $(padre).find(".iconnews div").attr("title");
-        console.log(esc_mensaje);
         //Compruebo que se trata de un post de transacciones
         if(esc_mensaje==="del ordenador") {
             if( $(elementos[i]).find("a")!==0 && $(elementos[i]).text().indexOf("cambia por ")!==-1 ) {
