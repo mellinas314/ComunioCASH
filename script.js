@@ -52,74 +52,76 @@ function calculaTodo() {
     //Obtengo todos los elementos del tablon
     var elementos = $(".article_content1 .article_content_text, .article_content2 .article_content_text");
 
+    //TODO comprobar que el autor del post es computer
     for(var i=0; i<elementos.length; i++){
+        //Compruebo que el mensaje procede de computer. En otro caso, se descarta.
+        var padre = $(elementos[i]).parent();
+        padre = $(padre).prev().prev();
+        var esc_mensaje = $(padre).find(".newsheader a");
         //Compruebo que se trata de un post de transacciones
-        if( $(elementos[i]).find("a")!==0 && $(elementos[i]).text().indexOf("cambia por ")!==-1 ) {
-            //Se trata de un traspaso
-            var texto = $(elementos[i]).text();
-            var enlaces_tmp = $(elementos[i]).find("a");
-            var enlaces = new Array();
-            for(var h=0; h<enlaces_tmp.length; h++) {
-                var href = $(enlaces_tmp[h]).attr("href");
-                if(href.indexOf("playerInfo")!==-1) {
-                    //Añado el elemento al array de enlaces valido
-                    enlaces.push(enlaces_tmp[h]);
+        if($(esc_mensaje).text().indexOf("Computer")!==-1 && $(esc_mensaje).attr("href").split("?pid=")[1]==="1") {
+            if( $(elementos[i]).find("a")!==0 && $(elementos[i]).text().indexOf("cambia por ")!==-1 ) {
+                //Se trata de un traspaso
+                var texto = $(elementos[i]).text();
+                var enlaces_tmp = $(elementos[i]).find("a");
+                var enlaces = new Array();
+                for(var h=0; h<enlaces_tmp.length; h++) {
+                    var href = $(enlaces_tmp[h]).attr("href");
+                    if(href.indexOf("playerInfo")!==-1) {
+                        //Añado el elemento al array de enlaces valido
+                        enlaces.push(enlaces_tmp[h]);
+                    }
+                }
+                var indice_enlaces = 0;
+                var array_ventas = texto.split("cambia por ");
+                for(var j = 1; j<array_ventas.length; j++){
+                    var cadena = array_ventas[j];
+                    //Obtengo el valor del traspaso
+                    var cantidad = cadena.split(" € ")[0].split(".");
+                    var cant_int = "";
+                    var tmp = cantidad;
+                    for(var h = 0; h<cantidad.length; h++){
+                        cant_int += cantidad[h];
+                    }
+                    cantidad = parseInt(cant_int);
+                    //Obtengo el vendedor
+                    var intervienen = array_ventas[j].split(" € de ");
+                    intervienen = intervienen[intervienen.length - 1];
+                    var vendedor = intervienen.split(" a ")[0];
+                    vendedor = vendedor.split(".")[0];
+                    if(vendedor!=="Computer"){
+                        vendedor = getPID($(enlaces[indice_enlaces]));
+                        indice_enlaces++;
+                    }
+                    //Obtengo el comprador
+                    var comprador = intervienen.split(" a ");
+                    comprador = comprador[comprador.length - 1];
+                    comprador = comprador.split(".")[0];
+                    if(comprador!=="Computer"){
+                        comprador = getPID($(enlaces[indice_enlaces]));
+                        indice_enlaces++;
+                    }
+                    
+                    //Añado los usuarios si es la primera vez que participan en una transaccion
+                    if(window.localStorage.getItem(vendedor)===null){
+                        usuarios.push(vendedor);
+                        window.localStorage.setItem(vendedor, dinero_inicial);
+                    }
+                    
+                    if(window.localStorage.getItem(comprador)===null){
+                        usuarios.push(comprador);
+                        window.localStorage.setItem(comprador, dinero_inicial);
+                    }
+                    //Actualizo los valores
+                    var c_dinero = parseInt(window.localStorage.getItem(comprador));
+                    var v_dinero = parseInt(window.localStorage.getItem(vendedor));
+                    window.localStorage.setItem(comprador, c_dinero - cantidad);
+                    window.localStorage.setItem(vendedor, v_dinero + cantidad);
                 }
             }
-            var indice_enlaces = 0;
-            var array_ventas = texto.split("cambia por ");
-            for(var j = 1; j<array_ventas.length; j++){
-                var cadena = array_ventas[j];
-                //Obtengo el valor del traspaso
-                var cantidad = cadena.split(" € ")[0].split(".");
-                var cant_int = "";
-                var tmp = cantidad;
-                for(var h = 0; h<cantidad.length; h++){
-                    cant_int += cantidad[h];
-                }
-                cantidad = parseInt(cant_int);
-                //Obtengo el vendedor
-                var intervienen = array_ventas[j].split(" € de ");
-                intervienen = intervienen[intervienen.length - 1];
-                var vendedor = intervienen.split(" a ")[0];
-                vendedor = vendedor.split(".")[0];
-                if(vendedor!=="Computer"){
-                    vendedor = getPID($(enlaces[indice_enlaces]));
-                    indice_enlaces++;
-                }
-                //Obtengo el comprador
-                var comprador = intervienen.split(" a ");
-                comprador = comprador[comprador.length - 1];
-                comprador = comprador.split(".")[0];
-                if(comprador!=="Computer"){
-                    comprador = getPID($(enlaces[indice_enlaces]));
-                    indice_enlaces++;
-                }
-                
-                //Añado los usuarios si es la primera vez que participan en una transaccion
-                if(window.localStorage.getItem(vendedor)===null){
-                    usuarios.push(vendedor);
-                    window.localStorage.setItem(vendedor, dinero_inicial);
-                }
-                
-                if(window.localStorage.getItem(comprador)===null){
-                    usuarios.push(comprador);
-                    window.localStorage.setItem(comprador, dinero_inicial);
-                }
-                //Actualizo los valores
-                var c_dinero = parseInt(window.localStorage.getItem(comprador));
-                var v_dinero = parseInt(window.localStorage.getItem(vendedor));
-                window.localStorage.setItem(comprador, c_dinero - cantidad);
-                window.localStorage.setItem(vendedor, v_dinero + cantidad);
-            }
-        }
-        //Compruebo si se trata de una pena disciplinaria
-        if($(elementos[i]).text().indexOf("Pena disciplinaria")!==-1 && $(elementos[i]).text().indexOf("serán quitados a")!==-1){
-            //Compruebo que el mensaje procede realmente de computer y no es una coña de un jugador
-            var padre = $(elementos[i]).parent();
-            padre = $(padre).prev().prev();
-            var esc_mensaje = $(padre).find(".newsheader a");
-            if($(esc_mensaje).text().indexOf("Computer")!==-1 && $(esc_mensaje).attr("href").split("?pid=")[1]==="1") {
+            //Compruebo si se trata de una pena disciplinaria
+
+            if($(elementos[i]).text().indexOf("Pena disciplinaria")!==-1 && $(elementos[i]).text().indexOf("serán quitados a")!==-1){                
                 //Guardo el nombre y el valor de la pena disciplinaria
                 var valor = $(elementos[i]).text().split("Pena disciplinaria: ")[1].split(" serán")[0].split(".");
                 var tmp = "";
@@ -139,16 +141,10 @@ function calculaTodo() {
                     var actual = parseInt(window.localStorage.getItem(nombre));
                     actual = actual + valor;
                     window.localStorage.setItem(nombre, actual);
-                }
+                }                
             }
-        }
-        //Compruebo si se trata de una prima
-        if($(elementos[i]).text().indexOf("Abono:")!==-1 && $(elementos[i]).text().indexOf("serán abonados a")!==-1){
-            //Compruebo que el mensaje procede realmente de computer y no es una coña de un jugador
-            var padre = $(elementos[i]).parent();
-            padre = $(padre).prev().prev();
-            var esc_mensaje = $(padre).find(".newsheader a");
-            if($(esc_mensaje).text().indexOf("Computer")!==-1 && $(esc_mensaje).attr("href").split("?pid=")[1]==="1") {
+            //Compruebo si se trata de una prima
+            if($(elementos[i]).text().indexOf("Abono:")!==-1 && $(elementos[i]).text().indexOf("serán abonados a")!==-1){
                 //Guardo el nombre y el valor de la pena disciplinaria
                 var valor = $(elementos[i]).text().split("Abono: ")[1].split(" serán")[0].split(".");
                 var tmp = "";
@@ -167,7 +163,7 @@ function calculaTodo() {
                     var actual = parseInt(window.localStorage.getItem(nombre));
                     actual = actual + valor;
                     window.localStorage.setItem(nombre, actual);
-                }
+                }                
             }
         }
     }
