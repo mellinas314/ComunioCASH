@@ -57,9 +57,10 @@ function calculaTodo() {
         //Compruebo que el mensaje procede de computer. En otro caso, se descarta.
         var padre = $(elementos[i]).parent();
         padre = $(padre).prev().prev();
-        var esc_mensaje = $(padre).find(".newsheader a");
+        var esc_mensaje = $(padre).find(".iconnews div").attr("title");
+        console.log(esc_mensaje);
         //Compruebo que se trata de un post de transacciones
-        if($(esc_mensaje).text().indexOf("Computer")!==-1 && $(esc_mensaje).attr("href").split("?pid=")[1]==="1") {
+        if(esc_mensaje==="del ordenador") {
             if( $(elementos[i]).find("a")!==0 && $(elementos[i]).text().indexOf("cambia por ")!==-1 ) {
                 //Se trata de un traspaso
                 var texto = $(elementos[i]).text();
